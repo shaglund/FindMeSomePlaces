@@ -10,7 +10,7 @@ Simple webservice built on [Spark](http://sparkjava.com/) that fetches places us
 
 ## Usage
 
-Send location(s) to http://localhost:4567/findmesomeplaces?location=<latitude>,<longitude>
+Send location(s) to http://localhost:4567/findmesomeplaces?location=\<latitude\>,\<longitude\>
 Supports multiple locations by adding more location arguments
 
 E.g
