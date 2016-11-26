@@ -7,6 +7,7 @@ import se.haglund.Configuration;
 import se.haglund.InterestingPlace;
 import se.haglund.NearbySearch;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +22,17 @@ public class GoogleNearbySearch implements NearbySearch {
     private final Configuration config;
 
     public GoogleNearbySearch(Configuration config) {
-        httpClient = new AsyncHttpClient();
-        parser = new GoogleSearchParser();
-        this.config = config;
+        this(new AsyncHttpClient(), new GoogleSearchParser(), config);
     }
 
     public GoogleNearbySearch(AsyncHttpClient httpClient, GoogleSearchParser parser, Configuration config) {
+        if (config.getGoogleApiKey() == null || config.getGoogleApiKey().isEmpty()) {
+            // Need to close the httpClient otherwise we hang when shutting down VM
+            if(httpClient != null) {
+                httpClient.close();
+            }
+            throw new RuntimeException("Google API key unavailable");
+        }
         this.httpClient = httpClient;
         this.parser = parser;
         this.config = config;
@@ -34,9 +40,6 @@ public class GoogleNearbySearch implements NearbySearch {
 
     @Override
     public Map<String, Set<InterestingPlace>> searchNearby(String[] locations) {
-        if (config.getGoogleApiKey() == null || config.getGoogleApiKey().isEmpty()) {
-            throw new RuntimeException("Google API key unavailable");
-        }
         Map<String, Set<InterestingPlace>> ret = new HashMap<>();
         for(String location: locations) {
             String nextPageToken = null;
@@ -64,4 +67,5 @@ public class GoogleNearbySearch implements NearbySearch {
         }
         return ret;
     }
+
 }

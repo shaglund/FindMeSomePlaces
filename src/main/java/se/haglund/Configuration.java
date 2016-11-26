@@ -15,7 +15,7 @@ public class Configuration {
                 Properties properties = new Properties();
                 properties.load(is);
                 apiKey = properties.getProperty("google.api.key");
-                radius = properties.getProperty("search.radius", "500");
+                radius = properties.getProperty("search.radius", DEFAULT_RADIUS);
             } else {
                 throw new FileNotFoundException("Cannot find properties file " + configFile);
             }
